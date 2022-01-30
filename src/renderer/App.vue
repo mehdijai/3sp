@@ -1,14 +1,48 @@
 <template>
   <main class="body">
+    <Loader v-if="loading" />
+    <Modal v-if="updateReady">
+      <template v-slot:header>
+        <h1>New Update is available.</h1>
+      </template>
+      <template v-slot:body>
+        A new update is installed, restart the app now.
+      </template>
+      <template v-slot:footer>
+        <Button @click="confirmUpdate" mode="secondary">Update</Button>
+      </template>
+    </Modal>
     <router-view />
   </main>
 </template>
 
 <script>
 import "material-icons/iconfont/material-icons.css";
-
+import { ref } from "vue";
+import { Loader, Modal, Button } from "./components/Components";
 export default {
   name: "App",
+  components: {
+    Loader,
+    Modal,
+    Button,
+  },
+  setup() {
+    const updateReady = ref(false);
+    const loading = ref(false);
+
+    window.ipc.on("update-ready", () => {
+      updateReady.value = true;
+    });
+
+    function confirmUpdate() {
+      updateReady.value = false;
+      loading.value = true;
+      window.ipc.send("restart-app");
+    }
+
+    return { confirmUpdate, updateReady, loading };
+  },
 };
 </script>
 

@@ -16,6 +16,8 @@ const validChannels = [
   "clear-all-keys", // ? return status
   "delete-my-account", // ? return status
   "app-version", // ? return version
+  "restart-app",
+  "update-ready",
 ];
 
 contextBridge.exposeInMainWorld("ipc", {

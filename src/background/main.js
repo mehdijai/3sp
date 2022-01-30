@@ -1,23 +1,24 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, Menu } from "electron";
+import { app, protocol, BrowserWindow, Menu, ipcMain } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
 const isDevelopment = process.env.NODE_ENV !== "production";
 import path from "path";
 import { server } from "./server";
+const { autoUpdater } = require("electron-updater");
 
 protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } },
 ]);
 
-const { autoUpdater } = require("electron-updater");
-
-autoUpdater.checkForUpdatesAndNotify();
-
 server();
 
 let win = null;
+
+ipcMain.on("restart-app", () => {
+  autoUpdater.quitAndInstall();
+});
 
 async function createWindow() {
   win = new BrowserWindow({
@@ -28,7 +29,6 @@ async function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       enableRemoteModule: false,
-
       preload: path.resolve(__static, "preload.js"),
     },
   });
@@ -43,8 +43,15 @@ async function createWindow() {
 
     win.loadURL("app://./index.html");
   }
-}
 
+  win.once("ready-to-show", () => {
+    autoUpdater.checkForUpdatesAndNotify();
+  });
+
+  autoUpdater.on("update-downloaded", () => {
+    win.webContents.send("update-ready");
+  });
+}
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
