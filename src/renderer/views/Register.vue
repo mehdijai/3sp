@@ -44,6 +44,8 @@
         </small>
       </template>
     </Form>
+
+    <small class="version">Version: v{{ $store.getters.appVersion }}</small>
   </section>
 </template>
 
@@ -78,6 +80,7 @@ export default {
     const store = useStore();
     const password = reactive({ value: "", error: null });
     const username = reactive({ value: "", error: null });
+    store.dispatch("getAppVersion");
 
     const errors = reactive({ type: "", messages: [] });
 
@@ -185,6 +188,8 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
+  align-items: center;
 
   .register-form__title {
     font-size: $font-largest;
@@ -202,6 +207,14 @@ export default {
   .register-form__footer {
     font-size: $font-smaller;
     font-weight: 300;
+  }
+
+  .version {
+    margin-top: 1em;
+    display: block;
+    color: rgb(150, 150, 150);
+    font-size: 0.8em;
+    font-weight: 500;
   }
 }
 </style>

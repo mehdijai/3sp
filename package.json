@@ -1,6 +1,6 @@
 {
   "name": "3sp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Mehdi Jai",
   "description": "Save, Safe, Share password, an end-to-end encryptor safe, to keep you private keys safe. Also, to share them with other users, either your team or you own other device",
   "private": true,
